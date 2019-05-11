@@ -19,9 +19,9 @@ namespace Laborator2.Models
 
         public enum Stare
         {
-            open,
-            inprogress,
-            closed,
+            Open,
+            InProgress,
+            Closed,
         }
 
 
@@ -38,7 +38,7 @@ namespace Laborator2.Models
         [EnumDataType(typeof(Stare))]
         public Stare Starea { get; set; }
 
-        public DateTime closedAt { get; set; }
+        public Nullable<DateTime> closedAt { get; set; }
 
         public List<Comment> Comments { get; set; }
 

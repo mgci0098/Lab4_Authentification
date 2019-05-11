@@ -13,6 +13,7 @@ namespace Laborator2.Models
         }
 
         public DbSet<Obiectiv> Obiective { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
     }
 }

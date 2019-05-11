@@ -25,7 +25,7 @@ namespace Laborator2.Controllers
         [HttpGet]
         public IEnumerable<Obiectiv> Get(DateTime? from, DateTime? to)
         {
-            IQueryable<Obiectiv> result = context.Obiective.Include(o=>o.Comments);
+            IQueryable<Obiectiv> result = context.Obiective.Include(o => o.Comments);
 
             if (from == null && to == null)
             {
@@ -64,20 +64,20 @@ namespace Laborator2.Controllers
             if (existing != null)
             {
                 //if (obiectiv.Starea.Equals(Obiectiv.Stare.closed))
-                if (obiectiv.Starea.Equals(Obiectiv.Stare.closed))
+                if (obiectiv.Starea.Equals(Obiectiv.Stare.Closed))
                 {
                     obiectiv.closedAt = DateTime.Now;
-
-               }
-               
+                }
+                else
+                {
+                    obiectiv.closedAt = (DateTime?)null;
+                }
+                obiectiv.Id = id;
                 context.Obiective.Update(obiectiv);
                 context.SaveChanges();
                 return Ok(obiectiv);
-
-
             }
-
-            obiectiv.closedAt = DateTime.Now;
+           
             context.Obiective.Add(obiectiv);
             context.SaveChanges();
             return Ok(obiectiv);
@@ -89,7 +89,7 @@ namespace Laborator2.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existing = context.Obiective.FirstOrDefault(obiectiv => obiectiv.Id == id);
+            var existing = context.Obiective.Include(o => o.Comments).FirstOrDefault(obiectiv => obiectiv.Id == id);
             if (existing == null)
             {
                 return NotFound();
