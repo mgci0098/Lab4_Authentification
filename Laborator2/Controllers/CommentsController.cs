@@ -29,8 +29,8 @@ namespace Lab3.Controllers
         /// <returns>A list of Comment comments.</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // GET: api/?filter = 5
-        [HttpGet("{filter}", Name = "Get")]
+        // GET: api/comments/?filter = 5
+        //[HttpGet("{?filter=}", Name = "filter")]
         [HttpGet]
         public IEnumerable<CommentGetModel> GetFiltered([FromQuery]string filter)
         {

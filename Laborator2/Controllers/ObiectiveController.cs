@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Laborator2.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/")]
     [ApiController]
     public class ObiectiveController : ControllerBase
     {

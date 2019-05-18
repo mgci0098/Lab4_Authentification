@@ -18,6 +18,9 @@ namespace Lab3.ViewModels
         public string Starea { get; set; }
         public Nullable<DateTime> closedAt { get; set; }
 
+        public List<Comment> Comments { get; set; }
+
+
         public static Obiectiv ToObiectiv (ObiectivPostModel obiectiv)
         {
             //Transformare din string in Enum Importance
@@ -50,7 +53,8 @@ namespace Lab3.ViewModels
                 Deadline = obiectiv.Deadline,
                 closedAt = obiectiv.closedAt,
                 Importanta = importanta,
-                Starea = stare
+                Starea = stare,
+                Comments = obiectiv.Comments
             };
         }
     }
