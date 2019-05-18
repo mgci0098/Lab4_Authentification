@@ -4,14 +4,16 @@ using Laborator2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Laborator2.Migrations
 {
     [DbContext(typeof(ObiectiveDbContext))]
-    partial class ObiectiveDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190518083434_AddObiectivId")]
+    partial class AddObiectivId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

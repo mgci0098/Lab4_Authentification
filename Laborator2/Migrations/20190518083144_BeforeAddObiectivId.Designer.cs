@@ -4,14 +4,16 @@ using Laborator2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Laborator2.Migrations
 {
     [DbContext(typeof(ObiectiveDbContext))]
-    partial class ObiectiveDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190518083144_BeforeAddObiectivId")]
+    partial class BeforeAddObiectivId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,7 +29,7 @@ namespace Laborator2.Migrations
 
                     b.Property<bool>("Important");
 
-                    b.Property<int>("ObiectivId");
+                    b.Property<int?>("ObiectivId");
 
                     b.Property<string>("Text");
 
@@ -67,8 +69,7 @@ namespace Laborator2.Migrations
                 {
                     b.HasOne("Laborator2.Models.Obiectiv")
                         .WithMany("Comments")
-                        .HasForeignKey("ObiectivId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ObiectivId");
                 });
 #pragma warning restore 612, 618
         }

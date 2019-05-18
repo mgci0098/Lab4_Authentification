@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lab3.Services;
+using Lab3.ViewModels;
 using Laborator2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,89 +16,124 @@ namespace Laborator2.Controllers
     public class ObiectiveController : ControllerBase
     {
 
-        private ObiectiveDbContext context;
+        //private ObiectiveDbContext context;
+        private IObiectivService obiectivService;
 
-        public ObiectiveController(ObiectiveDbContext context)
+        public ObiectiveController(IObiectivService obiectivService)
         {
-            this.context = context;
+            this.obiectivService = obiectivService;
         }
 
-        // GET: api/Obiective
+        /// <summary>
+        /// Gets all the obiectives.
+        /// </summary>
+        /// <param name="from">Optional, filter by minimum Deadline</param>
+        /// <param name="to">Optional, filter by maximum Deadline</param>
+        /// <returns>A list of Obiectiv objects.</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
-        public IEnumerable<Obiectiv> Get(DateTime? from, DateTime? to)
+        public IEnumerable<ObiectivGetModel> Get(DateTime? from, DateTime? to)
         {
-            IQueryable<Obiectiv> result = context.Obiective.Include(o => o.Comments);
-
-            if (from == null && to == null)
-            {
-                return result;
-            }
-
-            if (from != null)
-            {
-                result = result.Where(o => o.Deadline >= from);
-            }
-            if (to != null)
-            {
-                result = result.Where(o => o.Deadline <= to);
-            }
-
-            return result;
+            return obiectivService.GetAll(from, to);
         }
 
-        // POST: api/Obiective
+        /// <summary>
+        /// Add a obiectiv
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /obiective
+        ///     {
+        ///         "title": "Lab2WithComments",
+        ///         "description": "Lab2",
+        ///         "added": "0001-01-01T00:00:00",
+        ///         "deadline": "0001-01-01T00:00:00",
+        ///         "importanta": 1,
+        ///         "starea": 1,
+        ///         "closedAt": "0001-01-01T00:00:00",
+        ///         "comments": [
+        ///              {
+        ///                    "text": "Comenteriu 1",
+        ///                    "important": false
+        ///              },
+        ///              {
+        ///                    "text": "Comentariu 2",
+        ///                    "important": true
+        ///              }
+        ///         ]
+        ///     }
+        /// </remarks>
+        /// <param name="obiectiv">The obiectiv to add.</param>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">If the item is null</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
-        public void Post([FromBody] Obiectiv obiectiv)
+        public void Post([FromBody] ObiectivPostModel obiectiv)
         {
             //if (!ModelState.IsValid)
             //{
-
             //}
-            context.Obiective.Add(obiectiv);
-            context.SaveChanges();
+            obiectivService.Create(obiectiv);
         }
 
+        /// <summary>
+        /// Update an obiectiv if exists, or add if not.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PUT /obiective/id
+        ///     {
+        ///         "title": "Update",
+        ///         "description": "Lab2",
+        ///         "added": "0001-01-01T00:00:00",
+        ///         "deadline": "0001-01-01T00:00:00",
+        ///         "importanta": 1,
+        ///         "starea": 1,
+        ///         "closedAt": "0001-01-01T00:00:00",
+        ///         "comments": [
+        ///              {
+        ///                    "text": "Comenteriu 1",
+        ///                    "important": false
+        ///              }              
+        ///         ]
+        ///     }
+        /// </remarks>
+        /// <param name="id">The id of the obiectiv to update</param>
+        /// <param name="obiectiv">The new value of the obiectiv</param>
+        /// <returns>The updated obiectiv</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         // PUT: api/Obiective/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Obiectiv obiectiv)
+        public IActionResult Put(int id, [FromBody] ObiectivPostModel obiectiv)
         {
-            var existing = context.Obiective.AsNoTracking().FirstOrDefault(o => o.Id == id);
-            if (existing != null)
-            {
-                //if (obiectiv.Starea.Equals(Obiectiv.Stare.closed))
-                if (obiectiv.Starea.Equals(Obiectiv.Stare.Closed))
-                {
-                    obiectiv.closedAt = DateTime.Now;
-                }
-                else
-                {
-                    obiectiv.closedAt = (DateTime?)null;
-                }
-                obiectiv.Id = id;
-                context.Obiective.Update(obiectiv);
-                context.SaveChanges();
-                return Ok(obiectiv);
-            }
-           
-            context.Obiective.Add(obiectiv);
-            context.SaveChanges();
-            return Ok(obiectiv);
+            var result = obiectivService.Upsert(id, obiectiv);
+            return Ok(result);
         }
 
 
-
+        /// <summary>
+        /// Dalete an obiectiv by the id.
+        /// </summary>
+        /// <param name="id">The id to delete</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         // DELETE: api/Obiective/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existing = context.Obiective.Include(o => o.Comments).FirstOrDefault(obiectiv => obiectiv.Id == id);
-            if (existing == null)
+            var result = obiectivService.Delete(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            context.Obiective.Remove(existing);
-            context.SaveChanges();
-            return Ok();
+
+            return Ok(result);
         }
 
 
