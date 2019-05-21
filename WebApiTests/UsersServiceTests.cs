@@ -28,11 +28,26 @@ namespace Tests
         public void ValidRegisterShouldCreateNewUser()
         {
             var options = new DbContextOptionsBuilder<ObiectiveDbContext>()
-                         .UseInMemoryDatabase(databaseName: nameof(ValidRegisterShouldCreateANewUser))// "ValidRegisterShouldCreateANewUser")
+                         .UseInMemoryDatabase(databaseName: nameof(ValidRegisterShouldCreateNewUser))// "ValidRegisterShouldCreateANewUser")
                          .Options;
 
             using (var context = new ObiectiveDbContext(options))
             {
+                var usersService = new UsersService(context, config);
+                var added = new Lab3.ViewModels.RegisterPostModel
+                {
+                    Email = "em1@y.com",
+                    FirstName = "firstName1",
+                    LastName = "lastName1",
+                    UserName = "test_userName1",
+                    Password = "987654"
+                };
+
+                var result = usersService.Register(added);
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual(added.UserName, result.UserName);
             }
+        }
     }
 }

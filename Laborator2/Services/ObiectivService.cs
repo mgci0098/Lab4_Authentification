@@ -10,7 +10,7 @@ namespace Lab3.Services
 {
     public interface IObiectivService
     {
-        IEnumerable<ObiectivGetModel> GetAll(DateTime? from, DateTime? to);
+        PaginatedList<ObiectivGetModel> GetAll(DateTime? from, DateTime? to, int page);
         Obiectiv Create(ObiectivPostModel obiectiv);
         Obiectiv Upsert(int id, ObiectivPostModel obiectiv);
         Obiectiv Delete(int id);
@@ -50,16 +50,15 @@ namespace Lab3.Services
             return existing;
         }
 
-        public IEnumerable<ObiectivGetModel> GetAll(DateTime? from, DateTime? to)
+        public PaginatedList<ObiectivGetModel> GetAll(DateTime? from, DateTime? to, int page)
         {
             IQueryable<Obiectiv> result = context
                 .Obiective
+                .OrderBy(f => f.Id)
                 .Include(o => o.Comments);
 
-            if (from == null && to == null)
-            {
-                return result.Select(o => ObiectivGetModel.FromObiectiv(o));
-            }
+            PaginatedList<ObiectivGetModel> paginatedResult = new PaginatedList<ObiectivGetModel>();
+            paginatedResult.CurrentPage = page;
 
             if (from != null)
             {
@@ -70,8 +69,13 @@ namespace Lab3.Services
                 result = result.Where(o => o.Deadline <= to);
             }
 
-            return result.Select(o => ObiectivGetModel.FromObiectiv(o));
+            paginatedResult.NumberOfPages = (result.Count() - 1) / PaginatedList<ObiectivGetModel>.EntriesPerPage + 1;
+            result = result
+                .Skip((page - 1) * PaginatedList<ObiectivGetModel>.EntriesPerPage)
+                .Take(PaginatedList<ObiectivGetModel>.EntriesPerPage);
+            paginatedResult.Entries = result.Select(o => ObiectivGetModel.FromObiectiv(o)).ToList();
 
+            return paginatedResult;
         }
 
         public Obiectiv Upsert(int id, ObiectivPostModel obiectiv)
@@ -90,7 +94,7 @@ namespace Lab3.Services
 
                 Obiectiv toUpdate = ObiectivPostModel.ToObiectiv(obiectiv);
                 toUpdate.Id = id;
-                
+
                 context.Obiective.Update(toUpdate);
                 context.SaveChanges();
                 return toUpdate;

@@ -34,9 +34,11 @@ namespace Laborator2.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
-        public IEnumerable<ObiectivGetModel> Get(DateTime? from, DateTime? to)
+        public PaginatedList<ObiectivGetModel> Get([FromQuery]DateTime? from, [FromQuery]DateTime? to, [FromQuery]int page = 1)
         {
-            return obiectivService.GetAll(from, to);
+            // TODO: make pagination work with /api/flowers/page/<page number>
+            page = Math.Max(page, 1);
+            return obiectivService.GetAll(from, to, page);
         }
 
         /// <summary>

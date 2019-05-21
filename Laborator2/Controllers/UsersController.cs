@@ -27,7 +27,7 @@ namespace Lab3.Controllers
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]LoginPostModel login )
+        public IActionResult Authenticate([FromBody]LoginPostModel login)
         {
             var user = userService.Authenticate(login.Username, login.Password);
 
@@ -42,6 +42,10 @@ namespace Lab3.Controllers
         public IActionResult Register([FromBody]RegisterPostModel registerModel)
         {
             var user = userService.Register(registerModel);
+            if (user == null)
+            {
+                return BadRequest(new { ErrorMessage = "Username alredy exists." });
+            }
             return Ok(user);
         }
 

@@ -101,6 +101,12 @@ namespace Lab3.Services
 
         public UserGetModel Register(RegisterPostModel registerinfo)
         {
+            User existing = context.Users.FirstOrDefault(u => u.Username == registerinfo.UserName);
+
+            if(existing != null)
+            {
+                return null;
+            }
             context.Users.Add(new User
             {
                 Email = registerinfo.Email,
