@@ -37,7 +37,9 @@ namespace Lab3.Services
 
         public Obiectiv Delete(int id)
         {
-            var existing = context.Obiective.Include(o => o.Comments).FirstOrDefault(obiectiv => obiectiv.Id == id);
+            var existing = context.Obiective
+                .Include(o => o.Comments)
+                .FirstOrDefault(obiectiv => obiectiv.Id == id);
             if (existing == null)
             {
                 return null;

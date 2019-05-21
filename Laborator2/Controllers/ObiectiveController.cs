@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Lab3.Services;
 using Lab3.ViewModels;
 using Laborator2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -70,6 +71,7 @@ namespace Laborator2.Controllers
         /// <response code="400">If the item is null</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize]
         [HttpPost]
         public void Post([FromBody] ObiectivPostModel obiectiv)
         {
